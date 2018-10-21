@@ -19,7 +19,7 @@ class bloom_filter:
         return int(hashlib.sha384(obj).hexdigest(), 16) % self.cont_size
 
     def hash_sha512(self, obj):
-        return int(hashlib.sha384(obj).hexdigest(), 16) % self.cont_size
+        return int(hashlib.sha512(obj).hexdigest(), 16) % self.cont_size
 
     def hash_sha1(self,obj):
         return int(hashlib.sha1(obj).hexdigest(), 16) % self.cont_size
@@ -34,7 +34,8 @@ class bloom_filter:
             self.container[self.hash_md5(obj)] = 1;
             self.container[self.hash_sha256(obj)] = 1;
             self.container[self.hash_sha384(obj)] = 1;
-        elif(self.nb_hash == 6):
+
+        elif(self.nb_hash == 5):
             self.container[self.hash_md5(obj)] = 1;
             self.container[self.hash_sha256(obj)] = 1;
             self.container[self.hash_sha384(obj)] = 1;
@@ -49,8 +50,9 @@ class bloom_filter:
                 return "maybe"
             else:
                 return "no"
-        elif(self.nb_hash == 6):
-            if(self.container[hash_md5(obj)] and
+
+        elif(self.nb_hash == 5):
+            if(self.container[self.hash_md5(obj)] and
                     self.container[self.hash_sha256(obj)] and
                     self.container[self.hash_sha384(obj)] and
                     self.container[self.hash_sha512(obj)] and
