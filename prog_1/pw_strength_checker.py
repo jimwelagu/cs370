@@ -6,8 +6,14 @@
 #
 
 import sys
+import math
 import argparse
 import bloom_filter
+
+def bit_filter_size(n, p, k):
+    num = n * math.log(p)
+    den = math.pow(math.log(2), 2)
+    return int(math.ceil((num / den) * -1))
 
 def load_weak_pw_dictionary(filename, b_filter):
     with open(filename, 'r') as file:
@@ -27,16 +33,19 @@ def main():
     parser.add_argument('-i', action="store", required=True, dest="input", help="input file")
     parser.add_argument('-o', action="store", nargs=2, required=True, dest="output", help="output file")
     args = parser.parse_args()    
+   
+    probability = 0.0000001
+    num_elements = 623517
     
-    #bf_3 = bloom_filter.bloom_filter(3224147, 3)
-    bf_3 = bloom_filter.bloom_filter(402061996, 3)
-    print("length of bf_3: {}".format(len(bf_3.container)))
+    bit_3_size = bit_filter_size(num_elements, probability, 3)
+    bf_3 = bloom_filter.bloom_filter(bit_3_size, 3)
+    print("Bloom Filter with 3 Hash Functions Size: {}".format(bit_3_size))
     load_weak_pw_dictionary(args.dictionary, bf_3)
     check_pw(args.input, args.output[0], bf_3)
 
-    #bf_5 = bloom_filter.bloom_filter(4497731, 5)
-    bf_5 = bloom_filter.bloom_filter(76740849, 5)
-    print("length of bf_5: {}".format(len(bf_5.container)))
+    bit_5_size = bit_filter_size(num_elements, probability, 5)
+    bf_5 = bloom_filter.bloom_filter(bit_5_size, 5)
+    print("Bloom Filter with 5 Hash Functions Size: {}".format(bit_5_size))
     load_weak_pw_dictionary(args.dictionary, bf_5)
     check_pw(args.input, args.output[1], bf_5)
 
