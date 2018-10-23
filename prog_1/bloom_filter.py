@@ -9,8 +9,8 @@ import hashlib
 
 class bloom_filter:
 
-    def hash_md5(self, obj):
-        return int(hashlib.md5(obj).hexdigest(), 16) % self.cont_size
+    def hash_224(self, obj):
+        return int(hashlib.sha224(obj).hexdigest(), 16) % self.cont_size
     
     def hash_sha256(self, obj):
         return int(hashlib.sha256(obj).hexdigest(), 16) % self.cont_size
@@ -31,12 +31,11 @@ class bloom_filter:
 
     def add(self, obj):
         if(self.nb_hash == 3):
-            self.container[self.hash_md5(obj)] = 1;
+            self.container[self.hash_sha1(obj)] = 1;
+            self.container[self.hash_224(obj)] = 1;
             self.container[self.hash_sha256(obj)] = 1;
-            self.container[self.hash_sha384(obj)] = 1;
-
         elif(self.nb_hash == 5):
-            self.container[self.hash_md5(obj)] = 1;
+            self.container[self.hash_224(obj)] = 1;
             self.container[self.hash_sha256(obj)] = 1;
             self.container[self.hash_sha384(obj)] = 1;
             self.container[self.hash_sha512(obj)] = 1;
@@ -44,15 +43,14 @@ class bloom_filter:
     
     def membership_test(self, obj): 
         if(self.nb_hash == 3):
-            if(self.container[self.hash_md5(obj)] and
-                    self.container[self.hash_sha256(obj)] and
-                    self.container[self.hash_sha384(obj)]):
+            if(self.container[self.hash_sha1(obj)] and
+                    self.container[self.hash_224(obj)] and
+                    self.container[self.hash_sha256(obj)]):
                 return "maybe"
             else:
                 return "no"
-
         elif(self.nb_hash == 5):
-            if(self.container[self.hash_md5(obj)] and
+            if(self.container[self.hash_224(obj)] and
                     self.container[self.hash_sha256(obj)] and
                     self.container[self.hash_sha384(obj)] and
                     self.container[self.hash_sha512(obj)] and
